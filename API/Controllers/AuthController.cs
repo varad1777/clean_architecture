@@ -85,9 +85,9 @@ namespace EF_core_assignment.Controllers
             // Send JWT and Refresh Token in HttpOnly cookies
             Response.Cookies.Append("jwtToken", jwtToken, new CookieOptions
             {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
+                HttpOnly = true, // prevent JS access, so prevent XXS attack
+                Secure = true, // cookie only send on HTTPS
+                SameSite = SameSiteMode.None, //not same site 
                 Expires = DateTimeOffset.UtcNow.AddMinutes(15)
             });
 
@@ -97,9 +97,16 @@ namespace EF_core_assignment.Controllers
                 Secure = true,
                 SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.UtcNow.AddDays(7)
-            });
+            }); 
+            
+            var roles = await _userManager.GetRolesAsync(user);
 
-            return Ok(new { message = "Logged in successfully" , user = user.UserName });
+            return Ok(new
+            {
+                message = "Logged in successfully",
+                user = user.UserName,
+                roles = roles // <-- this will be a list of roles: ["Admin"], ["User"], or multiple
+            });
         }
 
 
@@ -129,8 +136,6 @@ namespace EF_core_assignment.Controllers
         {
             if (!Request.Cookies.TryGetValue("refreshToken", out var token))
                 return Unauthorized();
-
-            Console.WriteLine("The token from refresh token " , token);
 
             var refreshToken = await _tokenService.GetRefreshToken(token);
             if (refreshToken == null || refreshToken.Expires < DateTime.UtcNow)

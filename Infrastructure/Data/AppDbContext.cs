@@ -18,7 +18,8 @@ namespace MyApp.Infrastructure.Data
         public DbSet<Asset> Assets { get; set; }
         public DbSet<Signal> Signals { get; set; }
         public DbSet<RefreshTokens> RefreshTokens { get; set; }
-        public DbSet<Notification> Notification { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<UserNotification> UserNotifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

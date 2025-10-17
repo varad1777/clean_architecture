@@ -71,6 +71,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<IAssetService, AssetService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 
 // this is also has be scoped 
