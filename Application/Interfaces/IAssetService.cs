@@ -10,6 +10,7 @@ namespace MyApp.Application.Interfaces
         Asset Update(Guid id, Asset asset);
         bool Delete(Guid id);
         Asset GetById(Guid id);
-        IEnumerable<Asset> GetAll();
+        IEnumerable<Asset> GetAll(string? userId = null);
+       
     }
 }

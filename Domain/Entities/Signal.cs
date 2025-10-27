@@ -18,6 +18,9 @@ namespace MyApp.Domain.Entities
         [Required]
         public string Description { get; set; }
 
+        [Range(1, 100)]
+        public double Strength { get; set; }
+
         // Foreign key
         public Guid AssetId { get; set; }
         [JsonIgnore]

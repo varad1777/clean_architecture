@@ -7,6 +7,8 @@ namespace MyApp.Infrastructure.RTC
         public override async Task OnConnectedAsync()
         {
             Console.WriteLine($"Client connected: {Context.ConnectionId}");
+            var userId = Context.UserIdentifier; 
+    Console.WriteLine($"User connected: {userId}, connection: {Context.ConnectionId}");
             await base.OnConnectedAsync();
         }
 

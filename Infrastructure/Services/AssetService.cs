@@ -48,16 +48,16 @@ namespace MyApp.Infrastructure.Services
                 asset.Name = updatedAsset.Name;
                 asset.Description = updatedAsset.Description;
 
-                // Remove all existing signals
-                _context.Signals.RemoveRange(asset.Signals);
+                //// Remove all existing signals
+                //_context.Signals.RemoveRange(asset.Signals);
 
-                // Add new signals from DTO
-                asset.Signals = updatedAsset.Signals.Select(s => new Signal
-                {
-                    Name = s.Name,
-                    Description = s.Description,
-                    AssetId = asset.Id
-                }).ToList();
+                //// Add new signals from DTO
+                //asset.Signals = updatedAsset.Signals.Select(s => new Signal
+                //{
+                //    Name = s.Name,
+                //    Description = s.Description,
+                //    AssetId = asset.Id
+                //}).ToList();
 
                 _context.SaveChanges();
 
@@ -102,23 +102,31 @@ namespace MyApp.Infrastructure.Services
             }
         }
 
-        public IEnumerable<Asset> GetAll()
+
+
+        public IEnumerable<Asset> GetAll(string? userId = null)
         {
             try
             {
-                var assets = _context.Assets
+                var query = _context.Assets
                     .Include(a => a.User)
-                    .Include(a => a.Signals)
-                    .ToList();
+                    .AsQueryable();
+
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    query = query.Where(a => a.UserId == userId);
+                }
+
+                var assets = query.ToList();
 
                 // Remove sensitive information
                 foreach (var asset in assets)
                 {
                     if (asset.User != null)
                     {
-                        asset.User.PasswordHash = null;           // remove password
-                        asset.User.SecurityStamp = null;          // optional
-                        asset.User.ConcurrencyStamp = null;       // optional
+                        asset.User.PasswordHash = null;
+                        asset.User.SecurityStamp = null;
+                        asset.User.ConcurrencyStamp = null;
                     }
                 }
 
@@ -129,6 +137,7 @@ namespace MyApp.Infrastructure.Services
                 throw new Exception("An unexpected error occurred while retrieving the assets: " + ex.Message, ex);
             }
         }
+
 
     }
 }

@@ -40,7 +40,6 @@ namespace EF_core_assignment.Controllers
         {
             try
             {
-
                 var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
                 var isAdmin = User.IsInRole("Admin");
 
@@ -52,18 +51,17 @@ namespace EF_core_assignment.Controllers
                 }
                 else
                 {
-                    assets = _assetService.GetAll().Where(s => s.UserId == userId);
+                    assets = _assetService.GetAll(userId); // filter at DB level
                 }
 
                 return Ok(assets);
             }
             catch (Exception ex)
             {
-                // You could log the exception here
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-
         }
+
 
         [HttpGet("{id}")]
         public IActionResult GetById(Guid id)
@@ -111,12 +109,12 @@ namespace EF_core_assignment.Controllers
                 {
                     Name = dto.Name,
                     Description = dto.Description,
-                    UserId = userId,
-                    Signals = dto.Signals.Select(s => new Signal
-                    {
-                        Name = s.Name,
-                        Description = s.Description
-                    }).ToList()
+                    UserId = userId
+                    //Signals = dto.Signals.Select(s => new Signal
+                    //{
+                    //    Name = s.Name,
+                    //    Description = s.Description
+                    //}).ToList()
                 };
 
 

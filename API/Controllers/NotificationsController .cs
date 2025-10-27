@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MyApp.Infrastructure.Data;
 using System.Security.Claims;
 
@@ -61,6 +62,30 @@ namespace MyApp.API.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+
+
+        [HttpPut("mark-read/{notificationId}")]
+        public async Task<IActionResult> MarkAsRead(Guid notificationId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            // Find the specific UserNotification
+            var userNotification = await _context.UserNotifications
+                .FirstOrDefaultAsync(un => un.UserId == userId && un.NotificationId == notificationId);
+
+            if (userNotification == null)
+                return NotFound("Notification not found");
+
+            // Mark it as read
+            userNotification.IsRead = true;
+            userNotification.ReadAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
 
         // Get unread count
         [HttpGet("unread-count")]
